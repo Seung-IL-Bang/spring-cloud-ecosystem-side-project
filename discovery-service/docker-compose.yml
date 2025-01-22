@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  eureka-service:
+    image: seungilbang/spring-cloud-ecosystem:eureka
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m
