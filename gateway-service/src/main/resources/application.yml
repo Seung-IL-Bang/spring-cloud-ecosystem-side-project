@@ -1,10 +1,31 @@
 server:
-  port: 0
+  port: 5500
 
 spring:
   application:
     name: gateway-service
-
+  cloud:
+    gateway:
+      default-filters:
+        - name: MyGlobalFilter
+          args:
+            preFilter: true
+            postFilter: true
+      routes:
+        - id: user-service
+#          uri: lb://USER-SERVICE
+          uri: http://localhost:8080
+          predicates:
+            - Path=/user-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - MyCustomFilter
+            - name: MyLoggingFilter
+              args:
+                baseMessage: MyLoggingFilter start
+                preLogger: true
+                postLogger: true
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
