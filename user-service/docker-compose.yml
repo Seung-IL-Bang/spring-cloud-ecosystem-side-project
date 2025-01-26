@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  eureka-service:
+    image: seungilbang/spring-cloud-ecosystem:eureka
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+    networks:
+      - spring-cloud-network
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: spring_cloud_ecosystem_side_project
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - spring-cloud-network
+
+  user-service:
+    image: seungilbang/spring-cloud-ecosystem:user
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
