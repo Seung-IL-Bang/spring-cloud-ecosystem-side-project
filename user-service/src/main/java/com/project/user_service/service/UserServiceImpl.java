@@ -2,24 +2,28 @@ package com.project.user_service.service;
 
 import com.project.user_service.dto.UserDto;
 import com.project.user_service.entity.Users;
+import com.project.user_service.feign.OrderApiService;
 import com.project.user_service.repository.UserRepository;
 import com.project.user_service.util.UUIDGenerator;
+import com.project.user_service.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    private final OrderApiService orderApiService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
@@ -48,7 +52,13 @@ public class UserServiceImpl implements UserService {
 
         UserDto userDto = modelMapper.map(findUser.get(), UserDto.class);
 
-        // TODO : Get orders from order service
+        ResponseEntity<List<ResponseOrder>> orders = orderApiService.getOrdersByUserId(userId);
+        if (orders.getBody() == null) {
+            log.info("Order not found by User ID : {}", userId);
+            userDto.setOrders(Collections.emptyList());
+        } else {
+            userDto.setOrders(orders.getBody());
+        }
 
         return userDto;
     }
