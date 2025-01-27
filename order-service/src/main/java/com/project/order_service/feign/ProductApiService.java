@@ -14,7 +14,11 @@ public interface ProductApiService {
     @GetMapping("/products/{productId}")
     ResponseEntity<ResponseProduct> getProductByProductId(@PathVariable("productId") String productId);
 
-    @PostMapping("/products/{productId}/stock-decrease")
-    String decreaseStock(@PathVariable("productId") String productId,
-                         @RequestParam Integer quantity);
+    @PostMapping("/products/{productId}/order")
+    ResponseEntity<ResponseProduct> checkStockAndOrder(@PathVariable("productId") String productId,
+                                                       @RequestParam Integer quantity);
+
+    @PostMapping("/products/{productId}/order-cancel")
+    ResponseEntity<ResponseProduct> restoreStockAndOrderCancel(@PathVariable("productId") String productId,
+                                                               @RequestParam Integer quantity);
 }

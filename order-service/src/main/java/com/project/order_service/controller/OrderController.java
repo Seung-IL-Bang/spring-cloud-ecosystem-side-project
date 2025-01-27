@@ -42,4 +42,10 @@ public class OrderController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<ResponseOrder> getOrderByOrderId(@PathVariable("orderId") String orderId) {
+        OrderDto orderDto = orderService.getOrderByOrderId(orderId);
+        return ResponseEntity.ok(modelMapper.map(orderDto, ResponseOrder.class));
+    }
+
 }
