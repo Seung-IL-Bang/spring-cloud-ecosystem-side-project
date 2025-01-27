@@ -13,8 +13,8 @@ spring:
             postFilter: true
       routes:
         - id: user-service
-#          uri: lb://USER-SERVICE
-          uri: http://localhost:8080
+          uri: lb://USER-SERVICE
+#          uri: http://localhost:8080
           predicates:
             - Path=/user-service/**
           filters:
@@ -26,6 +26,23 @@ spring:
                 baseMessage: MyLoggingFilter start
                 preLogger: true
                 postLogger: true
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+#          uri: http://localhost:8081
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment}
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+#          uri: http://localhost:8082
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
