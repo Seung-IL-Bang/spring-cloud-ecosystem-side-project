@@ -9,4 +9,8 @@ public interface ProductService {
     List<Product> getAllProducts();
 
     Product getProductByProductId(String productId);
+
+    void decreaseStock(String productId, Integer quantity);
+
+    void increaseStock(String productId, Integer quantity);
 }

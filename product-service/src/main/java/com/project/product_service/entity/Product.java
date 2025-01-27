@@ -25,4 +25,15 @@ public class Product {
     private Integer unitPrice;
 
     private LocalDateTime createdAt;
+
+    public void decreaseStock(Integer quantity) {
+        if (this.stock - quantity < 0) {
+            throw new IllegalArgumentException("Stock cannot be negative");
+        }
+        this.stock -= quantity;
+    }
+
+    public void increaseStock(Integer quantity) {
+        this.stock += quantity;
+    }
 }

@@ -31,4 +31,32 @@ public class ProductServiceImpl implements ProductService {
 
         return findProduct.get();
     }
+
+    @Transactional
+    @Override
+    public void decreaseStock(String productId, Integer quantity) {
+        Optional<Product> findProduct = productRepository.findByProductId(productId);
+
+        if (findProduct.isEmpty()) {
+            throw new IllegalArgumentException("Product not found");
+        }
+
+        Product product = findProduct.get();
+
+        product.decreaseStock(quantity);
+    }
+
+    @Transactional
+    @Override
+    public void increaseStock(String productId, Integer quantity) {
+        Optional<Product> findProduct = productRepository.findByProductId(productId);
+
+        if (findProduct.isEmpty()) {
+            throw new IllegalArgumentException("Product not found");
+        }
+
+        Product product = findProduct.get();
+
+        product.increaseStock(quantity);
+    }
 }

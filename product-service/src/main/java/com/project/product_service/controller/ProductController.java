@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,10 +33,30 @@ public class ProductController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/products/{productId}")
+    @GetMapping("/products/{productId}/stock")
     public Integer getStockByProductId(@PathVariable("productId") String productId) {
         Product product = productService.getProductByProductId(productId);
         log.info("product : {}", product);
         return product.getStock();
+    }
+
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<ResponseProduct> getProductByProductId(@PathVariable("productId") String productId) {
+        Product product = productService.getProductByProductId(productId);
+        return ResponseEntity.ok(modelMapper.map(product, ResponseProduct.class));
+    }
+
+    @PostMapping("/products/{productId}/stock-decrease")
+    public ResponseEntity<String> decreaseStock(@PathVariable("productId") String productId,
+                                                @RequestParam Integer quantity) {
+        productService.decreaseStock(productId, quantity);
+        return ResponseEntity.ok("Decrease stock successfully");
+    }
+
+    @PostMapping("/products/{productId}/stock-increase")
+    public ResponseEntity<String> increaseStock(@PathVariable("productId") String productId,
+                                                @RequestParam Integer quantity) {
+        productService.increaseStock(productId, quantity);
+        return ResponseEntity.ok("Increase stock successfully");
     }
 }
