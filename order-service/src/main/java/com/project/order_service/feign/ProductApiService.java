@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "product-service", url = "http://localhost:8081")
+//@FeignClient(name = "product-service", url = "http://localhost:8081")
+@FeignClient(name = "product-service")
 public interface ProductApiService {
 
     @GetMapping("/products/{productId}")
