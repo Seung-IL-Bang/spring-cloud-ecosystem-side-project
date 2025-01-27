@@ -34,7 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public void decreaseStock(String productId, Integer quantity) {
+    public Product decreaseStock(String productId, Integer quantity) {
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
         if (findProduct.isEmpty()) {
@@ -44,11 +44,12 @@ public class ProductServiceImpl implements ProductService {
         Product product = findProduct.get();
 
         product.decreaseStock(quantity);
+        return product;
     }
 
     @Transactional
     @Override
-    public void increaseStock(String productId, Integer quantity) {
+    public Product increaseStock(String productId, Integer quantity) {
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
         if (findProduct.isEmpty()) {
@@ -58,5 +59,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = findProduct.get();
 
         product.increaseStock(quantity);
+        return product;
     }
 }

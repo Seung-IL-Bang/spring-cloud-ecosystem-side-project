@@ -40,23 +40,17 @@ public class ProductController {
         return product.getStock();
     }
 
-    @GetMapping("/products/{productId}")
-    public ResponseEntity<ResponseProduct> getProductByProductId(@PathVariable("productId") String productId) {
-        Product product = productService.getProductByProductId(productId);
+    @PostMapping("/products/{productId}/order")
+    public ResponseEntity<ResponseProduct> orderProduct(@PathVariable("productId") String productId,
+                                                        @RequestParam Integer quantity) {
+        Product product = productService.decreaseStock(productId, quantity);
         return ResponseEntity.ok(modelMapper.map(product, ResponseProduct.class));
     }
 
-    @PostMapping("/products/{productId}/stock-decrease")
-    public ResponseEntity<String> decreaseStock(@PathVariable("productId") String productId,
-                                                @RequestParam Integer quantity) {
-        productService.decreaseStock(productId, quantity);
-        return ResponseEntity.ok("Decrease stock successfully");
-    }
-
-    @PostMapping("/products/{productId}/stock-increase")
-    public ResponseEntity<String> increaseStock(@PathVariable("productId") String productId,
-                                                @RequestParam Integer quantity) {
-        productService.increaseStock(productId, quantity);
-        return ResponseEntity.ok("Increase stock successfully");
+    @PostMapping("/products/{productId}/order-cancel")
+    public ResponseEntity<ResponseProduct> orderCancelProduct(@PathVariable("productId") String productId,
+                                                              @RequestParam Integer quantity) {
+        Product product = productService.increaseStock(productId, quantity);
+        return ResponseEntity.ok(modelMapper.map(product, ResponseProduct.class));
     }
 }

@@ -10,7 +10,7 @@ public interface ProductService {
 
     Product getProductByProductId(String productId);
 
-    void decreaseStock(String productId, Integer quantity);
+    Product decreaseStock(String productId, Integer quantity);
 
-    void increaseStock(String productId, Integer quantity);
+    Product increaseStock(String productId, Integer quantity);
 }
