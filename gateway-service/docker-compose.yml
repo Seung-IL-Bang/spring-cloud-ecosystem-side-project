@@ -2,13 +2,17 @@ version: '3.8'
 services:
   eureka-service:
     image: seungilbang/spring-cloud-ecosystem:eureka
-    container_name: discovery-service
+#    container_name: discovery-service
     ports:
-      - "8761:8761"
+      - "8761-8762:8761"
     environment:
       - JAVA_OPTS=-Xms512m -Xmx1024m
     networks:
       - spring-cloud-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
 
   mysql:
     image: mysql:latest
@@ -28,55 +32,70 @@ services:
 
   user-service:
     image: seungilbang/spring-cloud-ecosystem:user
-    container_name: user-service
     ports:
-      - "8080:8080"
+      - "8090-8099:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://gateway-service-eureka-service-1:8761/eureka/,http://gateway-service-eureka-service-2:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - spring-cloud-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
 
   product-service:
     image: seungilbang/spring-cloud-ecosystem:product
-    container_name: product-service
+#    container_name: product-service
     ports:
-      - "8081:8081"
+      - "8080-8081:8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://gateway-service-eureka-service-1:8761/eureka/,http://gateway-service-eureka-service-2:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - spring-cloud-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
 
   order-service:
     image: seungilbang/spring-cloud-ecosystem:order
-    container_name: order-service
+#    container_name: order-service
     ports:
-      - "8082:8082"
+      - "8082-8083:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://gateway-service-eureka-service-1:8761/eureka/,http://gateway-service-eureka-service-2:8761/eureka/
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - spring-cloud-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
 
   gateway-service:
     image: seungilbang/spring-cloud-ecosystem:gateway
-    container_name: gateway-service
+#    container_name: gateway-service
     ports:
-      - "5500:5500"
+      - "5500-5501:5500"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://gateway-service-eureka-service-1:8761/eureka/,http://gateway-service-eureka-service-2:8761/eureka/
     networks:
       - spring-cloud-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
 
 networks:
   spring-cloud-network:
