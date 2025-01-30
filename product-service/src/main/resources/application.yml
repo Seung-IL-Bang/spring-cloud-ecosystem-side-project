@@ -29,3 +29,9 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+redis:
+  address: ${REDIS_ADDRESS:redis://localhost:6379}
+  connection.pool.size: ${REDIS_CONNECTION_POOL_SIZE:64}
+  connection.minimum.idle.size: ${REDIS_CONNECTION_MINIMUM_IDLE_SIZE:10}
+  password: ${REDIS_PASSWORD:}
