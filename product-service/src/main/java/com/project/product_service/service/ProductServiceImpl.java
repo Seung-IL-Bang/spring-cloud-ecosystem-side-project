@@ -1,5 +1,6 @@
 package com.project.product_service.service;
 
+import com.project.product_service.aop.StockLock;
 import com.project.product_service.entity.Product;
 import com.project.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
+    @StockLock
     public Product decreaseStock(String productId, Integer quantity) {
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
@@ -42,13 +44,13 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = findProduct.get();
-
         product.decreaseStock(quantity);
         return product;
     }
 
     @Transactional
     @Override
+    @StockLock
     public Product increaseStock(String productId, Integer quantity) {
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
@@ -57,7 +59,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Product product = findProduct.get();
-
         product.increaseStock(quantity);
         return product;
     }
