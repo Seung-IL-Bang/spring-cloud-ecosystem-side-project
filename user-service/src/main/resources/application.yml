@@ -29,3 +29,7 @@ eureka:
 logging:
   level:
     com.project.user_service.feign: DEBUG
+
+token:
+  expiration_time: 86400000
+  secret: 94zRKXY5QbDtkS2StVdOkjYpiGdjdYwbD4wclg6pmsPhHCnnDbjUjAAeeg+i20h8c1eoMU+r1xdBOzOsD0Qnyg==
