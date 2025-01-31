@@ -10,6 +10,19 @@ services:
     networks:
       - spring-cloud-network
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - spring-cloud-network
+
   mysql:
     image: mysql:latest
     container_name: mysql
@@ -48,8 +61,13 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - REDIS_ADDRESS=redis://redis:6379
+      - REDIS_CONNECTION_POOL_SIZE=64
+      - REDIS_CONNECTION_MINIMUM_IDLE_SIZE=10
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - spring-cloud-network
