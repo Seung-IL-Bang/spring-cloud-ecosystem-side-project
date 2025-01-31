@@ -16,6 +16,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  profiles:
+    active: default
+  cloud:
+    config:
+      name: test
+  config:
+    import: optional:configserver:http://localhost:8888
 
 eureka:
   instance:
@@ -33,3 +40,10 @@ logging:
 token:
   expiration_time: 86400000
   secret: 94zRKXY5QbDtkS2StVdOkjYpiGdjdYwbD4wclg6pmsPhHCnnDbjUjAAeeg+i20h8c1eoMU+r1xdBOzOsD0Qnyg==
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, info, beans, busrefresh
+

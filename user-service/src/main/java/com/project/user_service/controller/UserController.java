@@ -8,6 +8,7 @@ import com.project.user_service.vo.ResponseUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,14 @@ public class UserController {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final Environment env;
+
+    @GetMapping("/test/config")
+    public ResponseEntity<String> getConfig() {
+        String testValue = env.getProperty("test.value");
+        System.out.println("testValue = " + testValue);
+        return ResponseEntity.ok(testValue);
+    }
 
     @PostMapping("/users")
     public ResponseEntity<ResponseUser> createUser(@Valid @RequestBody RequestUser requestUser) {
