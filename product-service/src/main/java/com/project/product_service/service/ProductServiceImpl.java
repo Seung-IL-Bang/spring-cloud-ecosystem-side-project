@@ -4,6 +4,7 @@ import com.project.product_service.aop.StockLock;
 import com.project.product_service.entity.Product;
 import com.project.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
@@ -24,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductByProductId(String productId) {
+        log.info("product-service: 상품 조회");
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
         if (findProduct.isEmpty()) {
@@ -37,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @StockLock
     public Product decreaseStock(String productId, Integer quantity) {
+        log.info("product-service: 재고 차감");
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
         if (findProduct.isEmpty()) {
@@ -52,6 +56,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @StockLock
     public Product increaseStock(String productId, Integer quantity) {
+        log.info("product-service: 재고 증가");
         Optional<Product> findProduct = productRepository.findByProductId(productId);
 
         if (findProduct.isEmpty()) {
