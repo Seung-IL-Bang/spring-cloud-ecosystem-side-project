@@ -6,6 +6,7 @@ import com.project.product_service.vo.ResponseProduct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,14 @@ public class ProductController {
 
     private final ProductService productService;
     private final ModelMapper modelMapper;
+    private final Environment env;
+
+    @GetMapping("/test/config")
+    public ResponseEntity<String> getConfig() {
+        String testValue = env.getProperty("test.value");
+        log.info("testValue : {}", testValue);
+        return ResponseEntity.ok(testValue);
+    }
 
     @GetMapping("/products")
     public ResponseEntity<List<ResponseProduct>> getProducts() {
