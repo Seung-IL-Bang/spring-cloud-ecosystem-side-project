@@ -9,6 +9,7 @@ import com.project.order_service.util.OrderIdGenerator;
 import com.project.order_service.vo.ResponseProduct;
 import com.project.order_service.vo.ResponseUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
@@ -29,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
+        log.info("order-service: 주문 생성");
         ResponseEntity<ResponseUser> userResponse = userApiService.getUserByUserId(orderDto.getUserId());
         if (userResponse.getBody() == null) {
             throw new IllegalArgumentException("User not found");
@@ -69,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Orders> getOrdersByUserId(String userId) {
+        log.info("order-service: 회원ID로 주문 목록 조회");
         return orderRepository.findByUserId(userId);
     }
 }
