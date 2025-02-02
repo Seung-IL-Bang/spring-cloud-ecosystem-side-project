@@ -10,6 +10,20 @@ services:
     networks:
       - spring-cloud-network
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    restart: always
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:9411/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "9411:9411"
+    networks:
+      - spring-cloud-network
+
   zookeeper:
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper
@@ -101,10 +115,13 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
       mysql:
         condition: service_healthy
       config-service:
+        condition: service_healthy
+      zipkin:
         condition: service_healthy
     networks:
       - spring-cloud-network
@@ -122,12 +139,15 @@ services:
       - REDIS_CONNECTION_MINIMUM_IDLE_SIZE=10
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
       config-service:
+        condition: service_healthy
+      zipkin:
         condition: service_healthy
     networks:
       - spring-cloud-network
@@ -142,10 +162,13 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
       mysql:
         condition: service_healthy
       config-service:
+        condition: service_healthy
+      zipkin:
         condition: service_healthy
     networks:
       - spring-cloud-network
@@ -157,6 +180,10 @@ services:
       - "5500:5500"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+    depends_on:
+      zipkin:
+        condition: service_healthy
     networks:
       - spring-cloud-network
 
