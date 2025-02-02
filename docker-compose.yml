@@ -1,0 +1,165 @@
+version: '3.8'
+services:
+  eureka-service:
+    image: seungilbang/spring-cloud-ecosystem:eureka
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1024m
+    networks:
+      - spring-cloud-network
+
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    networks:
+      - spring-cloud-network
+
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "bus-topic:1:1"
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - spring-cloud-network
+
+  config-service:
+    image: seungilbang/spring-cloud-ecosystem:config
+    container_name: config-service
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - spring-cloud-network
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: spring_cloud_ecosystem_side_project
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - spring-cloud-network
+
+  user-service:
+    image: seungilbang/spring-cloud-ecosystem:user
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+  product-service:
+    image: seungilbang/spring-cloud-ecosystem:product
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - REDIS_ADDRESS=redis://redis:6379
+      - REDIS_CONNECTION_POOL_SIZE=64
+      - REDIS_CONNECTION_MINIMUM_IDLE_SIZE=10
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+  order-service:
+    image: seungilbang/spring-cloud-ecosystem:order
+    container_name: order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+  gateway-service:
+    image: seungilbang/spring-cloud-ecosystem:gateway
+    container_name: gateway-service
+    ports:
+      - "5500:5500"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
