@@ -6,6 +6,10 @@ spring:
       server:
         git:
           uri: ${SPRING_CLOUD_CONFIG_SERVER_URI:https://github.com/Seung-IL-Bang/spring-cloud-ecosystem-remote-config.git}
+    bus:
+      destination: test-topic
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:http://localhost:9092}
 
 server:
   port: 8888
