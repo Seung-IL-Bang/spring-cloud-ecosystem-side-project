@@ -1,5 +1,6 @@
 package com.project.product_service.aop.stock;
 
+import com.project.product_service.service.RedissonLockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
