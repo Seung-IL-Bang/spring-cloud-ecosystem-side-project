@@ -40,6 +40,8 @@ eureka:
 logging:
   level:
     com.project.user_service.feign: DEBUG
+  pattern:
+    correlation: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
 
 token:
   expiration_time: 86400000
@@ -50,4 +52,12 @@ management:
     web:
       exposure:
         include: refresh, health, info, beans, busrefresh
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      type: b3
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT:http://localhost:9411/api/v2/spans}
 

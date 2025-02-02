@@ -48,6 +48,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByUserId(String userId) {
+        log.info("user-service: 회원ID로 회원정보 및 주문 목록 조회");
+
         Optional<Users> findUser = userRepository.findByUserId(userId);
 
         if (findUser.isEmpty()) {
