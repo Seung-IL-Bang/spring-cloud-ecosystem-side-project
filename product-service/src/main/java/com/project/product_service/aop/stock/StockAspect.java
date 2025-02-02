@@ -1,4 +1,4 @@
-package com.project.product_service.aop;
+package com.project.product_service.aop.stock;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

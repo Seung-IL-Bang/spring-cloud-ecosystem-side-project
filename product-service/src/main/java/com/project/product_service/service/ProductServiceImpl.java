@@ -1,6 +1,6 @@
 package com.project.product_service.service;
 
-import com.project.product_service.aop.StockLock;
+import com.project.product_service.aop.stock.StockLock;
 import com.project.product_service.entity.Product;
 import com.project.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;

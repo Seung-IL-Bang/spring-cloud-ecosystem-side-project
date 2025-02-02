@@ -1,4 +1,4 @@
-package com.project.product_service.aop;
+package com.project.product_service.aop.stock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
