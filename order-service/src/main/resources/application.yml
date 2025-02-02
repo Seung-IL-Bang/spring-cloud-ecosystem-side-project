@@ -16,6 +16,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    config:
+      name: test
+    bus:
+      destination: ${SPRING_CLOUD_BUS_DESTINATION:bus-topic}
+  config:
+    import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888}
+  profiles:
+    active: default
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:http://localhost:9092}
 
 eureka:
   instance:
@@ -25,3 +36,9 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, busrefresh

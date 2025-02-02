@@ -7,6 +7,7 @@ import com.project.order_service.vo.RequestOrder;
 import com.project.order_service.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,14 @@ public class OrderController {
 
     private final OrderService orderService;
     private final ModelMapper modelMapper;
+    private final Environment env;
+
+    @GetMapping("/test/config")
+    public ResponseEntity<String> getConfig() {
+        String testValue = env.getProperty("test.value");
+        System.out.println("testValue = " + testValue);
+        return ResponseEntity.ok(testValue);
+    }
 
     @PostMapping("/{userId}/orders")
     public ResponseEntity<ResponseOrder> createOrder(@PathVariable("userId") String userId,
