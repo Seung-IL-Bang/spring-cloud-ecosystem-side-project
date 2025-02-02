@@ -21,8 +21,12 @@ spring:
   cloud:
     config:
       name: test
+    bus:
+      destination: ${SPRING_CLOUD_BUS_DESTINATION:bus-topic}
   config:
     import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:http://localhost:9092}
 
 eureka:
   instance:
