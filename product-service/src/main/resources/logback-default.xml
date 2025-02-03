@@ -1,5 +1,6 @@
 <configuration>
     <springProperty scope="context" name="applicationName" source="spring.application.name" defaultValue="defaultAppName" />
+    <springProperty scope="context" name="logstashDestination" source="logstash.destination" defaultValue="localhost:5044" />
     <property name="LOG_FILE" value="application.log"/>
 
     <!-- Logstash로 전송할 Appender -->
