@@ -2,6 +2,12 @@
     <springProperty scope="context" name="applicationName" source="spring.application.name" defaultValue="defaultAppName" />
     <property name="LOG_FILE" value="application.log"/>
 
+    <!-- Logstash로 전송할 Appender -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${logstashDestination}</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
     <!-- 콘솔 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
