@@ -51,7 +51,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, info, beans, busrefresh
+        include: refresh, health, info, beans, busrefresh, prometheus
   tracing:
     sampling:
       probability: 1.0
