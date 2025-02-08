@@ -19,10 +19,14 @@ public class OrderCancelledEventConsumer {
 
     @KafkaListener(topics = "ORDER_CANCELLED", groupId = "${spring.kafka.consumer.group-id:payment-service-group}")
     public void consume(String message) throws JsonProcessingException {
-        log.info("Consumed message: {}", message);
-        OrderCancelledEvent orderCancelledEvent = objectMapper.readValue(message, OrderCancelledEvent.class);
-        log.info("Order cancelled event: {}", orderCancelledEvent);
+        try {
+            log.info("Consumed message: {}", message);
+            OrderCancelledEvent orderCancelledEvent = objectMapper.readValue(message, OrderCancelledEvent.class);
+            log.info("Order cancelled event: {}", orderCancelledEvent);
 
-        paymentHandler.handle(orderCancelledEvent);
+            paymentHandler.handle(orderCancelledEvent);
+        } catch (Exception e) {
+            log.error("Error Consume OrderCancelledEvent", e);
+        }
     }
 }

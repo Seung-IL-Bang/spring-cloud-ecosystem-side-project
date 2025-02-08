@@ -1,6 +1,5 @@
 package com.project.payment_service.service;
 
-import com.project.payment_service.constant.PaymentStatus;
 import com.project.payment_service.producer.PaymentEventProducer;
 import com.project.payment_service.vo.*;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +57,6 @@ public class PaymentHandler {
 
     private void refund(OrderCancelledEvent event) {
         PaymentEvent paymentEvent = paymentProcessFacade.processRefund(event);
-        paymentEventProducer.send(PAYMENT_REFUND, paymentEvent); // cancelled event
+        paymentEventProducer.send(PAYMENT_REFUNDED, paymentEvent); // cancelled event
     }
 }

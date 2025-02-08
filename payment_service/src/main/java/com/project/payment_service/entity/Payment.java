@@ -28,4 +28,8 @@ public class Payment extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    public void updateStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
 }

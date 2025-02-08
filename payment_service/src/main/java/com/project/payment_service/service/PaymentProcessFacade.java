@@ -1,7 +1,6 @@
 package com.project.payment_service.service;
 
 import com.project.payment_service.constant.PaymentMethodTypes;
-import com.project.payment_service.constant.PaymentStatus;
 import com.project.payment_service.dto.CompensationInfo;
 import com.project.payment_service.entity.Payment;
 import com.project.payment_service.entity.PaymentMethod;
@@ -13,10 +12,7 @@ import com.project.payment_service.repository.PaymentMethodRepository;
 import com.project.payment_service.repository.PaymentRepository;
 import com.project.payment_service.service.pg.PaymentGateway;
 import com.project.payment_service.service.pg.PaymentGatewayFactory;
-import com.project.payment_service.vo.OrderCancelledEvent;
-import com.project.payment_service.vo.OrderCreatedEvent;
-import com.project.payment_service.vo.PaymentApprovedEvent;
-import com.project.payment_service.vo.PaymentEvent;
+import com.project.payment_service.vo.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.project.payment_service.constant.PaymentStatus.*;
 
 @Service
 @Slf4j
@@ -86,14 +84,14 @@ public class PaymentProcessFacade {
             Payment payment = Payment.builder()
                     .orderId(event.getOrderId())
                     .paymentId(paymentId)
-                    .paymentStatus(PaymentStatus.APPROVED)
+                    .paymentStatus(APPROVED)
                     .totalAmount(event.getTotalAmount())
                     .build();
             // Payment 저장
             paymentRepository.save(payment);
 
             log.info("Payment processed for order: {}", event.getOrderId());
-            return new PaymentApprovedEvent(event.getOrderId(), paymentId, PaymentStatus.APPROVED, event.getTotalAmount());
+            return new PaymentApprovedEvent(event.getOrderId(), paymentId, APPROVED, event.getTotalAmount());
         } catch (Exception e) {
             log.error("Error processing payment", e);
             throw new RuntimeException(e.getMessage(), e);
@@ -103,7 +101,30 @@ public class PaymentProcessFacade {
     @Transactional
     public PaymentEvent processRefund(OrderCancelledEvent event) {
         log.info("Payment refunded for order: {}", event.getOrderId());
-        return null;
+
+        List<PaymentMethodMapping> paymentMethodMapping = paymentMethodMappingRepository.findByPaymentId(event.getPaymentId());
+
+        for (PaymentMethodMapping mapping : paymentMethodMapping) {
+            refund(mapping);
+        }
+
+        // Payment 상태 변경
+        paymentRepository.findByPaymentId(event.getPaymentId())
+                .ifPresent(payment -> payment.updateStatus(REFUNDED));
+
+        return new PaymentRefundedEvent(event.getOrderId(), event.getPaymentId(), REFUNDED, "Customer request");
+    }
+
+    private void refund(PaymentMethodMapping paymentMethodMapping) {
+        Integer paymentMethodId = paymentMethodMapping.getPaymentMethodId(); // 결제 수단 ID
+
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
+                .orElseThrow(() -> new IllegalArgumentException("PaymentMethod not found"));
+
+        PaymentGateway paymentGateway = paymentGatewayFactory.getPaymentGateway(paymentMethod.getPaymentMethodType());
+
+        // PG 사 API 요청 - 결제 취소
+        paymentGateway.cancel(paymentMethodMapping.getPaymentId(), paymentMethodMapping.getAmount());
     }
 
     // 각 결제 단계에서 성공한 결제에 대해 보상(취소) 로직 실행

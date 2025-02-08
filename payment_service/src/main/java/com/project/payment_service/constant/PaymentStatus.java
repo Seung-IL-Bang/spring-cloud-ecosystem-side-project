@@ -10,7 +10,7 @@ public enum PaymentStatus {
     APPROVED("결제 승인"),
     FAILED("결제 실패"),
     REFUND_FAILED("환불 실패"),
-    REFUND("결제 환불");
+    REFUNDED("결제 환불");
 
     private String description;
 
