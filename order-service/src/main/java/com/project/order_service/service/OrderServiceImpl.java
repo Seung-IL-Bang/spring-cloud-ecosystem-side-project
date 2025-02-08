@@ -1,9 +1,9 @@
 package com.project.order_service.service;
 
-import com.project.order_service.constant.OrderEventTopics;
 import com.project.order_service.constant.OrderStatus;
 import com.project.order_service.dto.OrderDto;
 import com.project.order_service.entity.Orders;
+import com.project.order_service.event.OrderCancelledEvent;
 import com.project.order_service.event.OrderCreatedEvent;
 import com.project.order_service.feign.ProductApiService;
 import com.project.order_service.feign.UserApiService;
@@ -23,8 +23,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.project.order_service.constant.OrderEventTopics.*;
-import static com.project.order_service.constant.OrderStatus.*;
+import static com.project.order_service.constant.OrderEventTopics.ORDER_CANCELLED;
+import static com.project.order_service.constant.OrderEventTopics.ORDER_CREATED;
+import static com.project.order_service.constant.OrderStatus.CANCELLED;
+import static com.project.order_service.constant.OrderStatus.ORDERED;
 
 @Service
 @Slf4j
@@ -81,6 +83,32 @@ public class OrderServiceImpl implements OrderService {
             productApiService.restoreStockAndOrderCancel(orderDto.getProductId(), orderDto.getQuantity());
             throw new IllegalArgumentException("Order create failed", e);
         }
+    }
+
+    @Transactional
+    @Override
+    public void cancelOrder(OrderDto orderDto) {
+        log.info("order-service: 주문 취소");
+        ResponseEntity<ResponseUser> userResponse = userApiService.getUserByUserId(orderDto.getUserId());
+        if (userResponse.getBody() == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        if (!userResponse.getBody().getUserId().equals(orderDto.getUserId())) {
+            throw new IllegalArgumentException("User not matched");
+        }
+
+        // 상품 수량 복구
+        productApiService.restoreStockAndOrderCancel(orderDto.getProductId(), orderDto.getQuantity());
+
+        Orders order = orderRepository.findByOrderId(orderDto.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        // 주문 취소
+        order.updateOrderStatus(CANCELLED);
+
+        // ORDER_CANCELLED 이벤트 발행
+        orderEventProducer.send(ORDER_CANCELLED, new OrderCancelledEvent(orderDto.getOrderId(), orderDto.getProductId(), orderDto.getPaymentId(), orderDto.getQuantity()));
     }
 
     @Override

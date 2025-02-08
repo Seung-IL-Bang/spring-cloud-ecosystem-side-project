@@ -3,6 +3,7 @@ package com.project.order_service.controller;
 import com.project.order_service.dto.OrderDto;
 import com.project.order_service.entity.Orders;
 import com.project.order_service.service.OrderService;
+import com.project.order_service.vo.RequestCancelOrder;
 import com.project.order_service.vo.RequestOrder;
 import com.project.order_service.vo.ResponseOrder;
 import jakarta.validation.Valid;
@@ -37,6 +38,15 @@ public class OrderController {
         requestDto.setUserId(userId);
         OrderDto responseDto = orderService.createOrder(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(responseDto, ResponseOrder.class));
+    }
+
+    @DeleteMapping("/{userId}/orders")
+    public ResponseEntity<String> cancelOrder(@PathVariable("userId") String userId,
+                                              @RequestBody @Valid RequestCancelOrder requestCancelOrder) {
+        OrderDto requestDto = modelMapper.map(requestCancelOrder, OrderDto.class);
+        requestDto.setUserId(userId);
+        orderService.cancelOrder(requestDto);
+        return ResponseEntity.ok("Deleted all orders of user: " + userId);
     }
 
     @GetMapping("/{userId}/orders")

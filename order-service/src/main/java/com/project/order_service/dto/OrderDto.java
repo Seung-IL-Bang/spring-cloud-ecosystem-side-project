@@ -10,6 +10,7 @@ public class OrderDto {
 
     private String productId;
     private String orderId;
+    private String paymentId;
     private String userId;
     private Integer quantity;
     private Integer unitPrice;

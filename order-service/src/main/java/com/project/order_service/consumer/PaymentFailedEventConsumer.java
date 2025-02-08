@@ -2,14 +2,13 @@ package com.project.order_service.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.order_service.dto.OrderDto;
 import com.project.order_service.event.PaymentFailedEvent;
 import com.project.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-import static com.project.order_service.constant.OrderStatus.ORDER_CANCEL;
 
 @Service
 @Slf4j
@@ -25,7 +24,9 @@ public class PaymentFailedEventConsumer {
             log.info("Consumed message: {}", message);
             PaymentFailedEvent paymentFailedEvent = objectMapper.readValue(message, PaymentFailedEvent.class);
             log.info("Payment Failed event: {}", paymentFailedEvent);
-            orderService.updateOrderStatus(paymentFailedEvent.getOrderId(), ORDER_CANCEL);
+
+            OrderDto orderDto = orderService.getOrderByOrderId(paymentFailedEvent.getOrderId());
+            orderService.cancelOrder(orderDto);
         } catch (Exception e) {
             log.error("Error Consume PaymentFailedEvent", e);
         }
