@@ -1,5 +1,6 @@
 package com.project.order_service.entity;
 
+import com.project.order_service.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,4 +40,11 @@ public class Orders {
     private Integer totalPrice;
 
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
+    public void updateOrderStatus(OrderStatus status) {
+        this.orderStatus = status;
+    }
 }

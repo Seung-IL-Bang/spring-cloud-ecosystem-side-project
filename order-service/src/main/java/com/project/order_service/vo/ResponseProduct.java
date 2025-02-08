@@ -9,5 +9,6 @@ public class ResponseProduct {
     private String productName;
     private Integer stock;
     private Integer unitPrice;
+    private String createdAt;
 
 }

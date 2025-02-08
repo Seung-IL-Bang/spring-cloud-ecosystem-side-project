@@ -5,6 +5,7 @@ import com.project.order_service.entity.Orders;
 import com.project.order_service.service.OrderService;
 import com.project.order_service.vo.RequestOrder;
 import com.project.order_service.vo.ResponseOrder;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.env.Environment;
@@ -31,7 +32,7 @@ public class OrderController {
 
     @PostMapping("/{userId}/orders")
     public ResponseEntity<ResponseOrder> createOrder(@PathVariable("userId") String userId,
-                                                     @RequestBody RequestOrder requestOrder) {
+                                                     @RequestBody @Valid RequestOrder requestOrder) {
         OrderDto requestDto = modelMapper.map(requestOrder, OrderDto.class);
         requestDto.setUserId(userId);
         OrderDto responseDto = orderService.createOrder(requestDto);
