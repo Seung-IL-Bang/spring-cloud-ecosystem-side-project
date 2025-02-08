@@ -1,7 +1,6 @@
 package com.project.payment_service.vo;
 
 import com.project.payment_service.constant.PaymentStatus;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter

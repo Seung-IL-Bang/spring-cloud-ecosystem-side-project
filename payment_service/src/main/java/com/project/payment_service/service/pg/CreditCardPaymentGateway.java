@@ -29,7 +29,7 @@ public class CreditCardPaymentGateway implements PaymentGateway {
             throw new RuntimeException(e);
         }
 
-        if (Math.random() < 1) { // 20% 확률로 결제 실패
+        if (Math.random() < 0.2) { // 20% 확률로 결제 실패
             throw new RuntimeException("Credit card payment failed");
         }
 
