@@ -5,6 +5,7 @@ import com.project.delivery_service.event.OrderCreatedEvent;
 import com.project.delivery_service.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,9 @@ public class OrderCreatedEventConsumer {
     private final DeliveryService deliveryService;
 
     @KafkaListener(topics = "ORDER_CREATED", groupId = "${spring.kafka.consumer.group-id:delivery-service-group}")
-    public void consume(String message) {
+    public void consume(ConsumerRecord<String, String> record) {
         try {
+            String message = record.value();
             log.info("Consumed message: {}", message);
             OrderCreatedEvent orderCreatedEvent = objectMapper.readValue(message, OrderCreatedEvent.class);
             log.info("Order created event consumed: {}", orderCreatedEvent);

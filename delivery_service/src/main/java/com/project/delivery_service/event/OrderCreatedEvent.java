@@ -1,15 +1,18 @@
 package com.project.delivery_service.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.delivery_service.entity.AddressInfo;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderCreatedEvent {
 
     private String orderId;
     private DeliveryInfo deliveryInfo;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DeliveryInfo {
         private String recipientName;
         private String addressLine1;
