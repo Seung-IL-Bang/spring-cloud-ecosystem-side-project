@@ -19,11 +19,15 @@ public class OrderCreatedEventConsumer {
 
     @KafkaListener(topics = "ORDER_CREATED", groupId = "${spring.kafka.consumer.group-id:payment-service-group}")
     public void consume(String message) throws JsonProcessingException {
-        log.info("Consumed message: {}", message);
-        OrderCreatedEvent orderCreatedEvent = objectMapper.readValue(message, OrderCreatedEvent.class);
-        log.info("Order created event: {}", orderCreatedEvent);
+        try {
+            log.info("Consumed message: {}", message);
+            OrderCreatedEvent orderCreatedEvent = objectMapper.readValue(message, OrderCreatedEvent.class);
+            log.info("Order created event: {}", orderCreatedEvent);
 
-        paymentHandler.handle(orderCreatedEvent); // todo 결제 처리 => failed event 발생 가능
+            paymentHandler.handle(orderCreatedEvent); // todo 결제 처리 => failed event 발생 가능
+        } catch (Exception e) {
+            log.error("Error Consume OrderCreatedEvent", e);
+        }
     }
 
 }

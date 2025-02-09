@@ -21,6 +21,8 @@ spring:
     init:
       mode: always
       data-locations: ${SPRING_SQL_DATA_LOCATIONS:classpath:data.sql}
+  profiles:
+    active: default
 
 
 eureka:
