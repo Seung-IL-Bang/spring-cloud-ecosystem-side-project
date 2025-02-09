@@ -1,5 +1,6 @@
 package com.project.order_service.dto;
 
+import com.project.order_service.event.DeliveryInfo;
 import com.project.order_service.event.PaymentInfo;
 import lombok.Data;
 
@@ -16,5 +17,6 @@ public class OrderDto {
     private Integer unitPrice;
     private Integer totalPrice;
     private List<PaymentInfo> paymentInfos;
+    private DeliveryInfo deliveryInfo;
 
 }

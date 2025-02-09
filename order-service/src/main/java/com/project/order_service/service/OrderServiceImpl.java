@@ -75,7 +75,8 @@ public class OrderServiceImpl implements OrderService {
             OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(
                     order.getOrderId(),
                     BigDecimal.valueOf(totalPrice),
-                    orderDto.getPaymentInfos());
+                    orderDto.getPaymentInfos(),
+                    orderDto.getDeliveryInfo());
             orderEventProducer.send(ORDER_CREATED, orderCreatedEvent);
 
             return modelMapper.map(order, OrderDto.class);

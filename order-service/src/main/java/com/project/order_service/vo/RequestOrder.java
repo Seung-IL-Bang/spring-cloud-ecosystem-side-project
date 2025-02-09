@@ -1,5 +1,6 @@
 package com.project.order_service.vo;
 
+import com.project.order_service.event.DeliveryInfo;
 import com.project.order_service.event.PaymentInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -19,4 +20,7 @@ public class RequestOrder {
 
     @NotEmpty
     private List<PaymentInfo> paymentInfos;
+
+    @NotNull
+    private DeliveryInfo deliveryInfo;
 }

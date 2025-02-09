@@ -9,6 +9,7 @@ import com.project.order_service.producer.OrderEventProducer;
 import com.project.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,9 @@ public class PaymentApprovedEventConsumer {
     private final OrderEventProducer orderEventProducer;
 
     @KafkaListener(topics = "PAYMENT_APPROVED", groupId = "${spring.kafka.consumer.group-id:order-service-group}")
-    public void consume(String message) throws JsonProcessingException {
+    public void consume(ConsumerRecord<String, String> record) throws JsonProcessingException {
         try {
+            String message = record.value();
             log.info("Consumed message: {}", message);
             PaymentApprovedEvent paymentApprovedEvent = objectMapper.readValue(message, PaymentApprovedEvent.class);
             log.info("Payment approved event: {}", paymentApprovedEvent);
