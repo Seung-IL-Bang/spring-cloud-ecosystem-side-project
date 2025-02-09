@@ -3,7 +3,7 @@ package com.project.order_service.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.order_service.event.OrderCompleteEvent;
+import com.project.order_service.event.OrderCompletedEvent;
 import com.project.order_service.event.PaymentApprovedEvent;
 import com.project.order_service.producer.OrderEventProducer;
 import com.project.order_service.service.OrderService;
@@ -31,7 +31,7 @@ public class PaymentApprovedEventConsumer {
             PaymentApprovedEvent paymentApprovedEvent = objectMapper.readValue(message, PaymentApprovedEvent.class);
             log.info("Payment approved event: {}", paymentApprovedEvent);
             orderService.updateOrderStatus(paymentApprovedEvent.getOrderId(), COMPLETED);
-            orderEventProducer.send(ORDER_COMPLETED, new OrderCompleteEvent(paymentApprovedEvent.getOrderId(), paymentApprovedEvent.getPaymentId()));
+            orderEventProducer.send(ORDER_COMPLETED, new OrderCompletedEvent(paymentApprovedEvent.getOrderId(), paymentApprovedEvent.getPaymentId()));
         } catch (Exception e) {
             log.error("Error Consume PaymentApprovedEvent", e);
         }

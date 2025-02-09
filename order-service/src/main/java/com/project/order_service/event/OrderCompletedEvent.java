@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class OrderCompleteEvent {
+public class OrderCompletedEvent {
 
     private String orderId;
     private String paymentId;
