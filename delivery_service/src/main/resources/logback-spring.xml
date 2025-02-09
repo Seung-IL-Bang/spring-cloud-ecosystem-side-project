@@ -1,0 +1,9 @@
+<configuration>
+    <!-- Spring 환경에서 spring.profiles.active 값을 읽어와 activeProfile 변수에 저장 -->
+    <springProperty name="activeProfile" source="spring.profiles.active" defaultValue="default" />
+
+    <!-- activeProfile 값에 따라 해당하는 파일을 include -->
+    <include resource="logback-${activeProfile}.xml"/>
+
+    <!-- 공통 설정 등 -->
+</configuration>
