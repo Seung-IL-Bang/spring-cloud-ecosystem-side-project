@@ -252,6 +252,40 @@ services:
     networks:
       - spring-cloud-network
 
+  payment-service:
+    image: seungilbang/spring-cloud-ecosystem:payment
+    container_name: payment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - LOGSTASH_DESTINATION=logstash:5044
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
+  delivery-service:
+    image: seungilbang/spring-cloud-ecosystem:delivery
+    container_name: delivery-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spring_cloud_ecosystem_side_project
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=http://kafka:9092
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
+      - LOGSTASH_DESTINATION=logstash:5044
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - spring-cloud-network
+
   gateway-service:
     image: seungilbang/spring-cloud-ecosystem:gateway
     container_name: gateway-service
